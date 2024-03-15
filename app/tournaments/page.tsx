@@ -1,15 +1,56 @@
+"use client"
 import React from 'react'
 import TrophyCup from '@/assets/Tournaments page/TrophyCup.png'
 import Image from 'next/image'
 import TournamentCard from '@/components/Tournaments/TournamentCard'
-import { Events } from '@/dummyData'
+// import { Events } from '@/dummyData'
+import convertISOToNormalDate from '@/utils/convertDate'
+
+import { InMemoryCache, gql, useQuery } from '@apollo/client'
+import apolloClient from "@/utils/apolloClient"
 
 type Props = {}
 
-function page({}: Props) {
+interface eventInterface {
+  eventName: string,
+  eventDateTime: string,
+  isActive: boolean,
+  sportName: string,
+  sportType: string,
+  venue: string,
+  id: string,
+  capacity: number
+}
+
+const GET_EVENTS = gql`
+query FetchEvents {
+  events {
+    eventName
+    eventDateTime
+    isActive
+    sportName
+    sportType
+    venue
+    id
+    capacity
+  }
+}
+`
+
+function Page({}: Props) {
+
+  const { loading, error, data } = useQuery(GET_EVENTS, { client: apolloClient});
+
+  if (loading) return <p>loading</p>
+  if (error) return <p>{error.message}</p>
+  console.log(data.events);
+
+  // Typecasting fetched data 
+  const events: eventInterface[] | undefined = data.events as eventInterface[]
+  
   
   return (
-    <section className='w-[60%] flex flex-col justify-center items-center'>
+    <section className='w-[60%] flex flex-col justify-start items-center'>
       {/* Top blue heading section */}
       <div className='relative w-full min-h-[120px] bg-[#0062FF] flex justify-center items-center rounded-[20px]'>
         <Image src={TrophyCup} alt='' className='absolute left-[25px]'/>
@@ -18,9 +59,9 @@ function page({}: Props) {
 
       {/* Event card container */}
       <div className='max-h-[60vh] w-full flex justify-start items-start flex-wrap gap-8 mt-8 overflow-auto'>
-        {Events.map((event, index) => {          
+        {events.map((event, index) => {          
           return (
-            <TournamentCard key={index} title={event.title} date={event.date} image={event.image} participantCount={event.participantCount}/>
+            <TournamentCard key={index} title={event.eventName} date={convertISOToNormalDate(event.eventDateTime)} participantCount={event.capacity}/>
           )
         })}
       </div>
@@ -29,4 +70,4 @@ function page({}: Props) {
   )
 }
 
-export default page
+export default Page
