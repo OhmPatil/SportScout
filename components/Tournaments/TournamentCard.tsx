@@ -15,7 +15,7 @@ function TournamentCard({title, date, image, participantCount}: Props) {
   return (
     <div className="flex flex-col justify-center items-center gap-4 rounded-[18px] border-2 border-[#292932]">
       {/* Top Image */}
-      <Image src={image as StaticImageData} alt="" />
+      {/* <Image src={image as StaticImageData} alt="" /> */}
 
       {/* Title and date */}
       <div className="w-full px-3">
