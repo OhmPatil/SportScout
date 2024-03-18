@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import Sidebar from '@/components/Sidebar'
 import Filterbar from '@/components/Filterbar'
 import AuthProvider from '@/context/AuthProvider'
+import { Toaster } from '@/components/ui/toaster'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -28,6 +29,7 @@ export default function RootLayout({
             <Sidebar/>
             {children}
             <Filterbar/>
+            <Toaster/>
           </div>
         </AuthProvider>
       </body>
