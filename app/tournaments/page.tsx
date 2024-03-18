@@ -5,8 +5,9 @@ import Image from 'next/image'
 import TournamentCard from '@/components/Tournaments/TournamentCard'
 // import { Events } from '@/dummyData'
 import convertISOToNormalDate from '@/utils/convertDate'
+import { GET_EVENTS } from '@/utils/queries'
 
-import { InMemoryCache, gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import apolloClient from "@/utils/apolloClient"
 
 type Props = {}
@@ -19,23 +20,12 @@ interface eventInterface {
   sportType: string,
   venue: string,
   id: string,
-  capacity: number
+  capacity: number,
+  enrolledAppUsers: {
+    email: string,
+    name: string,
+  }[]
 }
-
-const GET_EVENTS = gql`
-query FetchEvents {
-  events {
-    eventName
-    eventDateTime
-    isActive
-    sportName
-    sportType
-    venue
-    id
-    capacity
-  }
-}
-`
 
 function Page({}: Props) {
 
@@ -61,7 +51,7 @@ function Page({}: Props) {
       <div className='max-h-[60vh] w-full flex justify-start items-start flex-wrap gap-8 mt-8 overflow-auto'>
         {events.map((event, index) => {          
           return (
-            <TournamentCard key={index} title={event.eventName} date={convertISOToNormalDate(event.eventDateTime)} participantCount={event.capacity}/>
+            <TournamentCard key={index} eventName={event.eventName} date={convertISOToNormalDate(event.eventDateTime)} capacity={event.capacity} sportName={event.sportName} sportType={event.sportType} venue={event.venue} enrolledUsers={event.enrolledAppUsers.length}/>
           )
         })}
       </div>

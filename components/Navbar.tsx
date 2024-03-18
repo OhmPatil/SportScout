@@ -9,6 +9,7 @@ import PfpPlaceholderIcon from '@/assets/Navbar/PfpPlaceholder.svg'
 import { signOut } from 'next-auth/react'
 import { useSession } from 'next-auth/react'
 import {redirect} from 'next/navigation'
+import Link from 'next/link'
 
 type Props = {}
 
@@ -21,7 +22,9 @@ function Navbar({}: Props) {
     <div className='bg-[#15151A] w-full h-fit min-h-[80px] flex justify-between items-center px-8'>
         {/* Left logo */}
         <div>
+          <Link href={"/tournaments"}>
             <h1 className='text-[16px] tracking-[.4rem]'>SPORTSCOUT</h1>
+          </Link>
         </div>
 
         {/* Center Search bar */}
@@ -36,7 +39,9 @@ function Navbar({}: Props) {
             <Image src={FriendReqIcon} alt=''/>
             <Image src={BellIcon} alt=''/>
             <Image src={ChatIcon} alt=''/>
-            <Image src={session?.user?.image!} width={40} height={40} alt='' className='rounded-full'/>
+            <Link href={"/account"}>
+              <Image src={session?.user?.image!} width={40} height={40} alt='' className='rounded-full'/>
+            </Link>
         </div>
 
     </div>

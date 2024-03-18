@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={inter.className + ' bg-[#1C1C24] text-white flex w-full min-h-screen flex-col gap-10'}>
         <AuthProvider>
           <Navbar/>
-          <div className='flex w-full justify-center'>
+          <div className='flex w-full justify-between'>
             <Sidebar/>
             {children}
             <Filterbar/>

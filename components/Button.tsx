@@ -1,13 +1,16 @@
 'use client'
 import React, { useState } from 'react'
 
-type Props = {}
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
+{
+  label?: string;
+}
 
-function Button({}: Props) {
+function Button({label}: ButtonProps) {
 const [joined, setJoined] = useState(false)
   return (
     <button className='font-semibold h-fit w-fit flex justify-center items-center px-[15px] py-[10px] bg-[#0062FF] rounded-[10px]'>
-      Join
+      {label ? label : "Join"}
     </button>
   )
 }
