@@ -1,10 +1,17 @@
+"use client"
 import React from "react";
 import Image, { StaticImageData } from "next/image";
 import SampleEvent1 from "@/assets/Tournaments page/SampleEvent1.png";
 import participantIcon from "@/assets/Tournaments page/ParticipantIcon.png";
 import Button from "@/components/Button";
+import { useMutation } from "@apollo/client";
+import { ADD_USER_TO_EVENT, GET_EVENTS, PUBLISH_EVENT } from "@/utils/queries";
+import client from "@/utils/apolloClient";
+import { useSession } from "next-auth/react";
+import { useToast } from "../ui/use-toast";
 
 type Props = {
+  id: string
   eventName?: string;
   sportName?: string;
   sportType?: string;
@@ -15,7 +22,29 @@ type Props = {
   enrolledUsers?: number;
 };
 
-function TournamentCard({eventName, sportName, sportType, venue, date, enrolledUsers, image, capacity}: Props) {
+function TournamentCard({id, eventName, sportName, sportType, venue, date, enrolledUsers, image, capacity}: Props) {
+  const {toast} = useToast()
+  const { data: session } = useSession();
+  const [publishEvent] = useMutation(PUBLISH_EVENT, {client: client})
+  const [addUsertoEvent] = useMutation(ADD_USER_TO_EVENT, {client: client})
+
+  async function joinEvent() {
+    try {
+      const {data} = await addUsertoEvent({variables: {id: id, email: session?.user?.email}})
+      console.log({data});
+      const result = await publishEvent({variables: {id:id}})
+      console.log(result);
+      client.refetchQueries({include: [GET_EVENTS]})
+      toast({title: "Event joined successfully!"})
+    }
+    catch(error){
+      console.log(error);
+      toast({title: "An error occured :(", variant: "destructive"})  
+    }
+
+    // console.log(id, session?.user?.email);
+    
+  }
   
   return (
     <div className="min-w-[250px] flex flex-col justify-center items-center gap-4 rounded-[18px] border-2 border-[#292932] p-3">
@@ -43,7 +72,8 @@ function TournamentCard({eventName, sportName, sportType, venue, date, enrolledU
             <p className="font-bold">{enrolledUsers} <span className="font-normal">Participant/s</span></p>
           </div>
         </div>
-        <Button />
+        {/* <Button onClick={joinEvent} /> */}
+        <button onClick={joinEvent}>JOIN</button>
       </div>
     </div>
   );

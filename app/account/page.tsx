@@ -54,7 +54,7 @@ function Page({}: Props) {
       });
     } catch (error) {
       // Display error toast
-      toast({ title: "Something went wrong :(", description: "User probably exists, check console for more details", variant: "destructive" });
+      toast({ title: "Something went wrong :(", description: "User with this email probably exists, check console for more details", variant: "destructive" });
       console.error("Error creating user:", error);
     }
   }

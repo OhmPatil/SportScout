@@ -29,7 +29,7 @@ interface eventInterface {
 
 function Page({}: Props) {
 
-  const { loading, error, data } = useQuery(GET_EVENTS, { client: apolloClient});
+  const { loading, error, data } = useQuery(GET_EVENTS, { client: apolloClient, fetchPolicy: 'cache-and-network', nextFetchPolicy: 'cache-and-network'});
 
   if (loading) return <p>loading</p>
   if (error) return <p>{error.message}</p>
@@ -51,7 +51,7 @@ function Page({}: Props) {
       <div className='max-h-[60vh] w-full flex justify-start items-start flex-wrap gap-8 mt-8 overflow-auto'>
         {events.map((event, index) => {          
           return (
-            <TournamentCard key={index} eventName={event.eventName} date={convertISOToNormalDate(event.eventDateTime)} capacity={event.capacity} sportName={event.sportName} sportType={event.sportType} venue={event.venue} enrolledUsers={event.enrolledAppUsers.length}/>
+            <TournamentCard key={index} id={event.id} eventName={event.eventName} date={convertISOToNormalDate(event.eventDateTime)} capacity={event.capacity} sportName={event.sportName} sportType={event.sportType} venue={event.venue} enrolledUsers={event.enrolledAppUsers.length}/>
           )
         })}
       </div>

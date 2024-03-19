@@ -42,4 +42,29 @@ const PUBLISH_USER = gql`
   }
 `;
 
-export { GET_EVENTS, CREATE_USER, PUBLISH_USER };
+const ADD_USER_TO_EVENT = gql`
+  mutation AddUsertoEvent($id: ID!, $email: String!) {
+    updateEvent(
+      where: { id: $id }
+      data: { enrolledAppUsers: { connect: { where: { email: $email } } } }
+    ) {
+      id
+    }
+  }
+`;
+
+const PUBLISH_EVENT = gql`
+  mutation PublishEvent($id: ID!) {
+    publishEvent(where: { id: $id }) {
+      id
+    }
+  }
+`;
+
+export {
+  GET_EVENTS,
+  CREATE_USER,
+  PUBLISH_USER,
+  ADD_USER_TO_EVENT,
+  PUBLISH_EVENT,
+};
