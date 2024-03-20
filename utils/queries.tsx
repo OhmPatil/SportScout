@@ -13,7 +13,6 @@ const GET_EVENTS = gql`
       capacity
       enrolledAppUsers {
         email
-        name
       }
     }
   }

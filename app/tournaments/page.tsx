@@ -1,63 +1,81 @@
-"use client"
-import React from 'react'
-import TrophyCup from '@/assets/Tournaments page/TrophyCup.png'
-import Image from 'next/image'
-import TournamentCard from '@/components/Tournaments/TournamentCard'
+"use client";
+import React from "react";
+import TrophyCup from "@/assets/Tournaments page/TrophyCup.png";
+import Image from "next/image";
+import TournamentCard from "@/components/Tournaments/TournamentCard";
 // import { Events } from '@/dummyData'
-import convertISOToNormalDate from '@/utils/convertDate'
-import { GET_EVENTS } from '@/utils/queries'
+import convertISOToNormalDate from "@/utils/convertDate";
+import { GET_EVENTS } from "@/utils/queries";
 
-import { useQuery } from '@apollo/client'
-import apolloClient from "@/utils/apolloClient"
+import { useQuery } from "@apollo/client";
+import apolloClient from "@/utils/apolloClient";
+import { useSession } from "next-auth/react";
 
-type Props = {}
+type Props = {};
 
 interface eventInterface {
-  eventName: string,
-  eventDateTime: string,
-  isActive: boolean,
-  sportName: string,
-  sportType: string,
-  venue: string,
-  id: string,
-  capacity: number,
+  eventName: string;
+  eventDateTime: string;
+  isActive: boolean;
+  sportName: string;
+  sportType: string;
+  venue: string;
+  id: string;
+  capacity: number;
   enrolledAppUsers: {
-    email: string,
-    name: string,
-  }[]
+    email: string;
+  }[];
 }
 
 function Page({}: Props) {
+  const { data: session } = useSession();
 
-  const { loading, error, data } = useQuery(GET_EVENTS, { client: apolloClient, fetchPolicy: 'cache-and-network', nextFetchPolicy: 'cache-and-network'});
+  const { loading, error, data } = useQuery(GET_EVENTS, {
+    client: apolloClient,
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-and-network",
+  });
 
-  if (loading) return <p>loading</p>
-  if (error) return <p>{error.message}</p>
-  console.log(data.events);
+  if (loading) return <p>loading</p>;
+  if (error) return <p>{error.message}</p>;
 
-  // Typecasting fetched data 
-  const events: eventInterface[] | undefined = data.events as eventInterface[]
-  
-  
+  // Typecasting fetched data
+  const events: eventInterface[] | undefined = data.events as eventInterface[];
+
+  // logic to check whether user is already registered in an event (used in JSX below)
+  // console.log(events[0].enrolledAppUsers.some(obj => obj.email === session?.user?.email));
+
   return (
-    <section className='w-[60%] flex flex-col justify-start items-center'>
+    <section className="w-[60%] flex flex-col justify-start items-center">
       {/* Top blue heading section */}
-      <div className='relative w-full min-h-[120px] bg-[#0062FF] flex justify-center items-center rounded-[20px]'>
-        <Image src={TrophyCup} alt='' className='absolute left-[25px]'/>
-        <h2 className='text-[24px] text-center font-bold'>381 tournaments<br></br>waiting for you</h2>
+      <div className="relative w-full min-h-[120px] bg-[#0062FF] flex justify-center items-center rounded-[20px]">
+        <Image src={TrophyCup} alt="" className="absolute left-[25px]" />
+        <h2 className="text-[24px] text-center font-bold">
+          381 tournaments<br></br>waiting for you
+        </h2>
       </div>
 
       {/* Event card container */}
-      <div className='max-h-[60vh] w-full flex justify-start items-start flex-wrap gap-8 mt-8 overflow-auto'>
-        {events.map((event, index) => {          
+      <div className="max-h-[60vh] w-full flex justify-start items-start flex-wrap gap-8 mt-8 overflow-auto">
+        {events.map((event, index) => {
           return (
-            <TournamentCard key={index} id={event.id} eventName={event.eventName} date={convertISOToNormalDate(event.eventDateTime)} capacity={event.capacity} sportName={event.sportName} sportType={event.sportType} venue={event.venue} enrolledUsers={event.enrolledAppUsers.length}/>
-          )
+            <TournamentCard
+              key={index}
+              id={event.id}
+              eventName={event.eventName}
+              date={convertISOToNormalDate(event.eventDateTime)}
+              capacity={event.capacity}
+              sportName={event.sportName}
+              sportType={event.sportType}
+              venue={event.venue}
+              enrolledUsers={event.enrolledAppUsers.length}
+              joined={event.enrolledAppUsers.some((obj) => obj.email === session?.user?.email)}
+            />
+          );
         })}
       </div>
-
     </section>
-  )
+  );
 }
 
-export default Page
+export default Page;

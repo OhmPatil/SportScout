@@ -3,12 +3,12 @@ import React from "react";
 import Image, { StaticImageData } from "next/image";
 import SampleEvent1 from "@/assets/Tournaments page/SampleEvent1.png";
 import participantIcon from "@/assets/Tournaments page/ParticipantIcon.png";
-import Button from "@/components/Button";
 import { useMutation } from "@apollo/client";
 import { ADD_USER_TO_EVENT, GET_EVENTS, PUBLISH_EVENT } from "@/utils/queries";
 import client from "@/utils/apolloClient";
 import { useSession } from "next-auth/react";
 import { useToast } from "../ui/use-toast";
+import { Button } from "../ui/button";
 
 type Props = {
   id: string
@@ -20,9 +20,11 @@ type Props = {
   image?: StaticImageData;
   capacity?: number;
   enrolledUsers?: number;
+  joined?: any
 };
 
-function TournamentCard({id, eventName, sportName, sportType, venue, date, enrolledUsers, image, capacity}: Props) {
+function TournamentCard({id, eventName, sportName, sportType, venue, date, enrolledUsers, image, capacity, joined}: Props) {
+  
   const {toast} = useToast()
   const { data: session } = useSession();
   const [publishEvent] = useMutation(PUBLISH_EVENT, {client: client})
@@ -41,13 +43,14 @@ function TournamentCard({id, eventName, sportName, sportType, venue, date, enrol
       console.log(error);
       toast({title: "An error occured :(", variant: "destructive"})  
     }
-
-    // console.log(id, session?.user?.email);
-    
   }
+
+  let buttonText;
+  if (joined) buttonText = 'Joined'
+  else buttonText = 'Join'
   
   return (
-    <div className="min-w-[250px] flex flex-col justify-center items-center gap-4 rounded-[18px] border-2 border-[#292932] p-3">
+    <div className="min-w-[300px] flex flex-col justify-center items-center gap-4 rounded-[18px] border-2 border-[#292932] p-3">
       {/* Top Image */}
       {/* <Image src={image as StaticImageData} alt="" /> */}
 
@@ -72,8 +75,7 @@ function TournamentCard({id, eventName, sportName, sportType, venue, date, enrol
             <p className="font-bold">{enrolledUsers} <span className="font-normal">Participant/s</span></p>
           </div>
         </div>
-        {/* <Button onClick={joinEvent} /> */}
-        <button onClick={joinEvent}>JOIN</button>
+        <Button disabled={joined} onClick={joinEvent} variant={"secondary"}>{buttonText}</Button>
       </div>
     </div>
   );
