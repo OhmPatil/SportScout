@@ -61,8 +61,8 @@ function Page({}: Props) {
 
   // TODO: Disable form fields if user already exists in DB
   return (
-    <section>
-      <form action={handleSubmit} className="space-y-4">
+    <section className="w-[60%]">
+      <form action={handleSubmit} className="space-y-4 w-fit mx-auto">
         {/* Name Field */}
         <div className="">
           <Label htmlFor="name">Name</Label>
