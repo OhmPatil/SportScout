@@ -60,10 +60,37 @@ const PUBLISH_EVENT = gql`
   }
 `;
 
+const CREATE_EVENT = gql`
+  mutation CreateEvent(
+    $sportName: String!
+    $eventName: String!
+    $sportType: SportType!
+    $capacity: Int!
+    $eventDateTime: DateTime!
+    $venue: String!
+    $creator: String!
+  ) {
+    createEvent(
+      data: {
+        sportName: $sportName
+        capacity: $capacity
+        eventCreator: { connect: { email: $creator } }
+        eventDateTime: $eventDateTime
+        eventName: $eventName
+        sportType: $sportType
+        venue: $venue
+      }
+    ) {
+      id
+    }
+  }
+`;
+
 export {
   GET_EVENTS,
   CREATE_USER,
   PUBLISH_USER,
   ADD_USER_TO_EVENT,
   PUBLISH_EVENT,
+  CREATE_EVENT,
 };
