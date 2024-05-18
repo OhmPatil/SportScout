@@ -10,6 +10,7 @@ import { GET_EVENTS } from "@/utils/queries";
 import { useQuery } from "@apollo/client";
 import apolloClient from "@/utils/apolloClient";
 import { useSession } from "next-auth/react";
+import NewEventDialog from "@/components/Tournaments/NewEventDialog";
 
 type Props = {};
 
@@ -46,7 +47,7 @@ function Page({}: Props) {
   // console.log(events[0].enrolledAppUsers.some(obj => obj.email === session?.user?.email));
 
   return (
-    <section className="w-[60%] flex flex-col justify-start items-center">
+    <section className="w-[60%] flex flex-col justify-start items-start gap-4">
       {/* Top blue heading section */}
       <div className="relative w-full min-h-[120px] bg-[#0062FF] flex justify-center items-center rounded-[20px]">
         <Image src={TrophyCup} alt="" className="absolute left-[25px]" />
@@ -74,6 +75,7 @@ function Page({}: Props) {
           );
         })}
       </div>
+      <NewEventDialog/>
     </section>
   );
 }
