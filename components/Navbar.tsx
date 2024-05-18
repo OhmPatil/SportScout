@@ -10,6 +10,7 @@ import { signOut } from 'next-auth/react'
 import { useSession } from 'next-auth/react'
 import {redirect} from 'next/navigation'
 import Link from 'next/link'
+import { Button } from './ui/button'
 
 type Props = {}
 
@@ -35,7 +36,8 @@ function Navbar({}: Props) {
 
         {/* Right icons */}
         <div className='flex justify-center items-center gap-6'>
-          <button onClick={() => signOut()}>{session?.user?.email}</button>
+          <p>Signed in as {session?.user?.email}</p>
+          <Button variant={"destructive"} onClick={() => signOut()}>Sign out</Button>
             <Image src={FriendReqIcon} alt=''/>
             <Image src={BellIcon} alt=''/>
             <Image src={ChatIcon} alt=''/>
