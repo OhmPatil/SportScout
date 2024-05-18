@@ -41,7 +41,7 @@ function TournamentCard({id, eventName, sportName, sportType, venue, date, enrol
     }
     catch(error){
       console.log(error);
-      toast({title: "An error occured :(", variant: "destructive"})  
+      toast({title: "An error occured :(",description: "If you haven't completed your profile, please do so in /account", variant: "destructive"})  
     }
   }
 
@@ -68,7 +68,7 @@ function TournamentCard({id, eventName, sportName, sportType, venue, date, enrol
         <div>
           <div className="flex justify-start items-center gap-2">
             <Image src={participantIcon} alt="" />
-            <p className="font-bold">{capacity} <span className="font-normal">Slots</span></p>
+            <p className="font-bold">{capacity! - enrolledUsers!} <span className="font-normal">Slots open</span></p>
           </div>
           <div className="flex justify-between items-center gap-2">
             <Image src={participantIcon} alt="" />
