@@ -12,11 +12,12 @@ import {
 import { useSession } from "next-auth/react";
 import React, { useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { CREATE_USER, PUBLISH_USER, GET_ENROLLED_EVENTS } from "@/utils/queries";
+import { CREATE_USER, PUBLISH_USER, GET_ENROLLED_EVENTS, GET_CREATED_EVENTS } from "@/utils/queries";
 import client from "@/utils/apolloClient";
 import { useToast } from "@/components/ui/use-toast";
 import apolloClient from "@/utils/apolloClient";
 import convertISOToNormalDate from "@/utils/convertDate";
+import exportFromJSON from 'export-from-json'
 
 type Props = {};
 
@@ -26,6 +27,20 @@ interface enrolledEventInterface {
   sportType: string,
   sportName: string,
   venue: string,
+}
+
+interface createdEventInterface {
+  eventName: string,
+  eventDateTime: string,
+  sportType: string,
+  sportName: string,
+  venue: string,
+  enrolledAppUsers: {
+    name: string,
+    email: string,
+    gender: string,
+    dob: string,
+  }[]
 }
 
 function Page({}: Props) {
@@ -38,17 +53,27 @@ function Page({}: Props) {
 
   const [createUser] = useMutation(CREATE_USER, { client: client });
   const [publishUser] = useMutation(PUBLISH_USER, { client: client });
-  const { loading, error, data} = useQuery(GET_ENROLLED_EVENTS, {
+  const enrolledEventsData = useQuery(GET_ENROLLED_EVENTS, {
     variables: {email: session?.user?.email},
     client: apolloClient,
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-and-network",
   });
+  
+  const createdEventsData = useQuery(GET_CREATED_EVENTS, {
+    variables: {email: session?.user?.email},
+    client: apolloClient,
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-and-network",
+  });
+  
+  
+  if (enrolledEventsData.loading || createdEventsData.loading) return <p>loading...</p>
+  if (enrolledEventsData.error || createdEventsData.error) return <p>error occured...</p>
+  const enrolledEvents : enrolledEventInterface[] | undefined = enrolledEventsData.data.appUser.enrolledEvents as enrolledEventInterface[]
+  const createdEvents : createdEventInterface[] | undefined = createdEventsData.data.events as createdEventInterface[]
+  console.log(createdEventsData.data.events);
 
-  if (loading) return <p>loading...</p>
-  if (error) return <p>{error.message}</p>
-  const enrolledEvents : enrolledEventInterface[] | undefined = data.appUser.enrolledEvents as enrolledEventInterface[]
-  // console.log(enrolledEvents);
 
   async function handleSubmit() {
     try {
@@ -147,7 +172,7 @@ function Page({}: Props) {
       {/* Show enrolled events */}
       <div className="space-y-4">
         <h3 className="text-2xl font-semibold">Enrolled events</h3>
-        {loading && (
+        {enrolledEventsData.loading && (
           <span>loading events...</span>
         )}
         {enrolledEvents.map((item, index:number) => {
@@ -158,6 +183,28 @@ function Page({}: Props) {
               <p>{item.sportType}</p>
               <p>{convertISOToNormalDate(item.eventDateTime)}</p>
               <p>{item.venue}</p>
+            </div>
+        )
+        })}
+      </div>
+
+      {/* Show created events */}
+      <div className="space-y-4">
+        <h3 className="text-2xl font-semibold">Created events</h3>
+        {createdEventsData.loading && (
+          <span>loading events...</span>
+        )}
+        {createdEvents.map((item, index:number) => {
+          return (
+            <div key={index} className="border-white border p-2">
+              <p>{item.eventName}</p>
+              <p>{item.sportName}</p>
+              <p>{item.sportType}</p>
+              <p>{convertISOToNormalDate(item.eventDateTime)}</p>
+              <p>{item.venue}</p>
+              {item.enrolledAppUsers.length > 0 && (
+                <button className="border border-red-500 p-2" onClick={() => exportFromJSON({data: item.enrolledAppUsers, fields: ['name', 'email', 'dob', 'gender'] ,fileName: 'export', exportType: exportFromJSON.types.csv})}>Export participants</button>
+              )}
             </div>
         )
         })}

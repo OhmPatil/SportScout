@@ -100,6 +100,27 @@ const GET_ENROLLED_EVENTS = gql`
   }
 `;
 
+const GET_CREATED_EVENTS = gql`
+  query GetCreatedEvents($email: String!) {
+    events(where: { eventCreator: { email: $email } }) {
+      id
+      eventName
+      eventDateTime
+      capacity
+      sportName
+      sportType
+      venue
+      enrolledAppUsers {
+        id
+        name
+        email
+        dob
+        gender
+      }
+    }
+  }
+`;
+
 export {
   GET_EVENTS,
   CREATE_USER,
@@ -107,5 +128,6 @@ export {
   ADD_USER_TO_EVENT,
   PUBLISH_EVENT,
   CREATE_EVENT,
-  GET_ENROLLED_EVENTS
+  GET_ENROLLED_EVENTS,
+  GET_CREATED_EVENTS
 };
