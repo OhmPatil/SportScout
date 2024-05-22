@@ -11,12 +11,22 @@ import {
 } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
 import React, { useRef, useState } from "react";
-import { useMutation } from "@apollo/client";
-import { CREATE_USER, PUBLISH_USER } from "@/utils/queries";
+import { useMutation, useQuery } from "@apollo/client";
+import { CREATE_USER, PUBLISH_USER, GET_ENROLLED_EVENTS } from "@/utils/queries";
 import client from "@/utils/apolloClient";
 import { useToast } from "@/components/ui/use-toast";
+import apolloClient from "@/utils/apolloClient";
+import convertISOToNormalDate from "@/utils/convertDate";
 
 type Props = {};
+
+interface enrolledEventInterface {
+  eventName: string,
+  eventDateTime: string,
+  sportType: string,
+  sportName: string,
+  venue: string,
+}
 
 function Page({}: Props) {
   const { toast } = useToast();
@@ -28,6 +38,17 @@ function Page({}: Props) {
 
   const [createUser] = useMutation(CREATE_USER, { client: client });
   const [publishUser] = useMutation(PUBLISH_USER, { client: client });
+  const { loading, error, data} = useQuery(GET_ENROLLED_EVENTS, {
+    variables: {email: session?.user?.email},
+    client: apolloClient,
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-and-network",
+  });
+
+  if (loading) return <p>loading...</p>
+  if (error) return <p>{error.message}</p>
+  const enrolledEvents : enrolledEventInterface[] | undefined = data.appUser.enrolledEvents as enrolledEventInterface[]
+  // console.log(enrolledEvents);
 
   async function handleSubmit() {
     try {
@@ -61,8 +82,9 @@ function Page({}: Props) {
 
   // TODO: Disable form fields if user already exists in DB
   return (
-    <section className="w-[60%]">
-      <form action={handleSubmit} className="space-y-4 w-fit mx-auto">
+    <section className="w-[60%] space-y-4">
+      <h3 className="text-2xl font-semibold">Your account</h3>
+      <form action={handleSubmit} className="space-y-4 w-fit">
         {/* Name Field */}
         <div className="">
           <Label htmlFor="name">Name</Label>
@@ -121,6 +143,25 @@ function Page({}: Props) {
 
         <Button type="submit" label="Submit" />
       </form>
+
+      {/* Show enrolled events */}
+      <div className="space-y-4">
+        <h3 className="text-2xl font-semibold">Enrolled events</h3>
+        {loading && (
+          <span>loading events...</span>
+        )}
+        {enrolledEvents.map((item, index:number) => {
+          return (
+            <div key={index} className="border-white border p-2">
+              <p>{item.eventName}</p>
+              <p>{item.sportName}</p>
+              <p>{item.sportType}</p>
+              <p>{convertISOToNormalDate(item.eventDateTime)}</p>
+              <p>{item.venue}</p>
+            </div>
+        )
+        })}
+      </div>
     </section>
   );
 }
