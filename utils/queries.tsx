@@ -11,8 +11,12 @@ const GET_EVENTS = gql`
       venue
       id
       capacity
+      about
       enrolledAppUsers {
         email
+      }
+      image {
+        url
       }
     }
   }
@@ -69,6 +73,8 @@ const CREATE_EVENT = gql`
     $eventDateTime: DateTime!
     $venue: String!
     $creator: String!
+    $imageID: ID!
+    $about: String!
   ) {
     createEvent(
       data: {
@@ -79,6 +85,8 @@ const CREATE_EVENT = gql`
         eventName: $eventName
         sportType: $sportType
         venue: $venue
+        about: $about
+        image: { connect: { id: $imageID } }
       }
     ) {
       id
@@ -95,6 +103,11 @@ const GET_ENROLLED_EVENTS = gql`
         sportType
         venue
         eventDateTime
+        capacity
+        about
+        image {
+          url
+        }
       }
     }
   }
@@ -110,6 +123,7 @@ const GET_CREATED_EVENTS = gql`
       sportName
       sportType
       venue
+      about
       enrolledAppUsers {
         id
         name
@@ -117,6 +131,25 @@ const GET_CREATED_EVENTS = gql`
         dob
         gender
       }
+      image {
+        url
+      }
+    }
+  }
+`;
+
+const CREATE_IMAGE_ASSET = gql`
+  mutation CreateAsset($url: String!) {
+    createAsset(data: { uploadUrl: $url }) {
+      id
+    }
+  }
+`;
+
+const PUBLISH_IMAGE_ASSET = gql`
+  mutation PublishAsset($id: ID!) {
+    publishAsset(where: { id: $id }) {
+      id
     }
   }
 `;
@@ -129,5 +162,7 @@ export {
   PUBLISH_EVENT,
   CREATE_EVENT,
   GET_ENROLLED_EVENTS,
-  GET_CREATED_EVENTS
+  GET_CREATED_EVENTS,
+  CREATE_IMAGE_ASSET,
+  PUBLISH_IMAGE_ASSET,
 };

@@ -17,7 +17,7 @@ type Props = {
   sportType?: string;
   venue?: string;
   date?: string;
-  image?: StaticImageData;
+  image?: string;
   capacity?: number;
   enrolledUsers?: number;
   joined?: any
@@ -50,12 +50,14 @@ function TournamentCard({id, eventName, sportName, sportType, venue, date, enrol
   else buttonText = 'Join'
   
   return (
-    <div className="min-w-[300px] flex flex-col justify-center items-center gap-4 rounded-[18px] border-2 border-[#292932] p-3">
+    <div className="min-w-[300px] flex flex-col justify-center items-center gap-4 rounded-[18px] border-2 border-[#292932] hover:bg-[#2c2c38] transition-all duration-300">
       {/* Top Image */}
-      {/* <Image src={image as StaticImageData} alt="" /> */}
+      <div className="w-[300px] h-[200px] rounded-t-[18px] overflow-hidden">
+        <Image src={image as string} alt="event picture" width={300} height={200} objectFit="cover" />
+      </div>
 
       {/* Title and date */}
-      <div className="w-full">
+      <div className="w-full p-3">
         <h3 className="font-bold text-xl">{sportName}</h3>
         <p>{sportType}</p>
         <h3 className="font-medium">{eventName}</h3>
@@ -64,7 +66,7 @@ function TournamentCard({id, eventName, sportName, sportType, venue, date, enrol
       </div>
 
       {/* no. of participants and button */}
-      <div className="w-full flex justify-between">
+      <div className="w-full flex justify-between p-3">
         <div>
           <div className="flex justify-start items-center gap-2">
             <Image src={participantIcon} alt="" />

@@ -18,18 +18,27 @@ import { useToast } from "@/components/ui/use-toast";
 import apolloClient from "@/utils/apolloClient";
 import convertISOToNormalDate from "@/utils/convertDate";
 import exportFromJSON from 'export-from-json'
+import TournamentCard from "@/components/Tournaments/TournamentCard";
+import AccountEventCard from "@/components/Account/AccountEventCard";
 
 type Props = {};
 
 interface enrolledEventInterface {
+  id: string
   eventName: string,
   eventDateTime: string,
+  capacity: number
   sportType: string,
   sportName: string,
   venue: string,
+  image: {
+    url: string
+  }
 }
 
 interface createdEventInterface {
+  id: string,
+  capacity: number
   eventName: string,
   eventDateTime: string,
   sportType: string,
@@ -40,7 +49,11 @@ interface createdEventInterface {
     email: string,
     gender: string,
     dob: string,
-  }[]
+  }[],
+  image: {
+    url: string
+  }
+
 }
 
 function Page({}: Props) {
@@ -107,7 +120,7 @@ function Page({}: Props) {
 
   // TODO: Disable form fields if user already exists in DB
   return (
-    <section className="w-[60%] space-y-4">
+    <section className="w-[60%] max-h-[80vh] space-y-4 overflow-auto">
       <h3 className="text-2xl font-semibold">Your account</h3>
       <form action={handleSubmit} className="space-y-4 w-fit">
         {/* Name Field */}
@@ -175,18 +188,24 @@ function Page({}: Props) {
         {enrolledEventsData.loading && (
           <span>loading events...</span>
         )}
-        {enrolledEvents.map((item, index:number) => {
-          return (
-            <div key={index} className="border-white border p-2">
-              <p>{item.eventName}</p>
-              <p>{item.sportName}</p>
-              <p>{item.sportType}</p>
-              <p>{convertISOToNormalDate(item.eventDateTime)}</p>
-              <p>{item.venue}</p>
-            </div>
-        )
-        })}
-      </div>
+          <div className="w-fit flex gap-4 flex-wrap">
+            {enrolledEvents.map((item, index:number) => {
+              return (
+                <AccountEventCard
+                  image={item.image.url}
+                  key={index}
+                  id={item.id}
+                  eventName={item.eventName}
+                  date={convertISOToNormalDate(item.eventDateTime)}
+                  capacity={item.capacity}
+                  sportName={item.sportName}
+                  sportType={item.sportType}
+                  venue={item.venue}
+                />
+              )
+            })}
+          </div>
+        </div>
 
       {/* Show created events */}
       <div className="space-y-4">
@@ -194,20 +213,26 @@ function Page({}: Props) {
         {createdEventsData.loading && (
           <span>loading events...</span>
         )}
+        <div className="w-fit flex gap-4 flex-wrap">
         {createdEvents.map((item, index:number) => {
           return (
-            <div key={index} className="border-white border p-2">
-              <p>{item.eventName}</p>
-              <p>{item.sportName}</p>
-              <p>{item.sportType}</p>
-              <p>{convertISOToNormalDate(item.eventDateTime)}</p>
-              <p>{item.venue}</p>
-              {item.enrolledAppUsers.length > 0 && (
-                <button className="border border-red-500 p-2" onClick={() => exportFromJSON({data: item.enrolledAppUsers, fields: ['name', 'email', 'dob', 'gender'] ,fileName: 'export', exportType: exportFromJSON.types.csv})}>Export participants</button>
-              )}
+            <div key={index} className="">
+                <AccountEventCard
+                  image={item.image.url}
+                  key={index}
+                  id={item.id}
+                  eventName={item.eventName}
+                  date={convertISOToNormalDate(item.eventDateTime)}
+                  capacity={item.capacity}
+                  sportName={item.sportName}
+                  sportType={item.sportType}
+                  venue={item.venue}
+                  enrolledUsers={item.enrolledAppUsers}
+                />              
             </div>
         )
         })}
+        </div>
       </div>
     </section>
   );

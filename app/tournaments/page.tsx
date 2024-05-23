@@ -23,9 +23,13 @@ interface eventInterface {
   venue: string;
   id: string;
   capacity: number;
+  about: string
   enrolledAppUsers: {
     email: string;
   }[];
+  image: {
+    url: string
+  }
 }
 
 function Page({}: Props) {
@@ -42,6 +46,9 @@ function Page({}: Props) {
 
   // Typecasting fetched data
   const events: eventInterface[] | undefined = data.events as eventInterface[];
+  console.log(events);
+  
+  
 
   // logic to check whether user is already registered in an event (used in JSX below)
   // console.log(events[0].enrolledAppUsers.some(obj => obj.email === session?.user?.email));
@@ -61,6 +68,7 @@ function Page({}: Props) {
         {events.map((event, index) => {
           return (
             <TournamentCard
+              image={event.image.url}
               key={index}
               id={event.id}
               eventName={event.eventName}
